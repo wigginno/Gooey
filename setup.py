@@ -11,8 +11,9 @@ version = '1.0.8.1'
 deps = [
     'Pillow>=4.3.0',
     'psutil>=5.4.2',
-    'colored>=1.3.93',
-    'pygtrie>=2.3.3'
+    'colored==1.4.3',
+    'darkdetect==0.8.0',
+    'pygtrie>=2.3.3',
 ]
 
 if sys.version[0] == '3':

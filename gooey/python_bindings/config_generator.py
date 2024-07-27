@@ -2,7 +2,7 @@ import os
 import sys
 import warnings
 import textwrap
-import wx
+import darkdetect
 from gooey.python_bindings import argparse_to_json
 from gooey.gui.util.quoting import quote
 from gooey.python_bindings import constants
@@ -24,7 +24,6 @@ default_layout = {
     }],
 }
 
-
 def create_from_parser(parser, source_path, **kwargs):
 
   run_cmd = kwargs.get('target')
@@ -34,8 +33,9 @@ def create_from_parser(parser, source_path, **kwargs):
     else:
       run_cmd = '{} -u {}'.format(quote(sys.executable), quote(source_path))
 
-  use_dark_mode = wx.SystemSettings.GetAppearance().IsUsingDarkBackground()
+  use_dark_mode = darkdetect.isDark()
   default_text_color  = constants.COLOR_WHITE if use_dark_mode else constants.COLOR_BLACK
+
   build_spec = {
       'language':             kwargs.get('language', 'english'),
       'target':               run_cmd,
@@ -159,4 +159,3 @@ def get_font_weight(kwargs):
     if weight not in weights:
         raise ValueError(error_msg.format(weight))
     return weight
-

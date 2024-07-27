@@ -1,6 +1,7 @@
 from gooey.gui.lang.i18n import _
 
 import wx
+import darkdetect
 
 from gooey.gui.three_to_four import Constants
 from gooey.python_bindings import constants
@@ -13,7 +14,7 @@ class BaseDialog(wx.Dialog):
   def __init__(self, parent, pickerClass, pickerGetter, localizedPickerLabel):
     wx.Dialog.__init__(self, parent, title=localizedPickerLabel)
 
-    use_dark_mode = wx.SystemSettings.GetAppearance().IsUsingDarkBackground()
+    use_dark_mode = darkdetect.isDark()
     self.SetBackgroundColour(constants.COLOR_GREY_90 if use_dark_mode else constants.COLOR_GREY_5)
 
     self.ok_button = wx.Button(self, wx.ID_OK, label=_('ok'))
@@ -53,6 +54,3 @@ class BaseDialog(wx.Dialog):
     """
 
     return self.pickerGetter(self.picker)
-
-
-

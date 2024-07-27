@@ -5,14 +5,13 @@ import argparse
 import json
 import os
 import sys
-import wx
+import darkdetect
 from argparse import (
     _CountAction,
     _HelpAction,
     _StoreConstAction,
     _StoreFalseAction,
     _StoreTrueAction,
-    _StoreAction,
     _SubParsersAction,
     _VersionAction)
 from collections import OrderedDict
@@ -20,10 +19,10 @@ from functools import partial
 from uuid import uuid4
 
 from gooey.python_bindings.gooey_parser import GooeyParser
-from gooey.python_bindings import constants
 from gooey.util.functional import merge, getin, identity, assoc
 from gooey.gui.components.options.validators import validators
 from gooey.gui.components.options.validators import collect_errors
+from gooey.python_bindings import constants
 
 VALID_WIDGETS = (
     'FileChooser',
@@ -63,21 +62,21 @@ class UnsupportedConfiguration(Exception):
 # TODO: merge the default foreground and bg colors from the
 # baseline build_spec
 def item_default():
-    use_dark_mode = wx.SystemSettings.GetAppearance().IsUsingDarkBackground()
+    use_dark_mode = darkdetect.isDark()
     return {
-    'error_color': '#ea7878',
-    'label_color': constants.COLOR_WHITE if use_dark_mode else constants.COLOR_BLACK,
-    'help_color': constants.COLOR_GREY_5 if use_dark_mode else constants.COLOR_GREY_100,
-    'full_width': False,
-    'validator': {
-        'type': 'local',
-        'test': 'lambda x: True',
-        'message': ''
-    },
-    'external_validator': {
-        'cmd': '',
+        'error_color': '#ea7878',
+        'label_color': constants.COLOR_WHITE if use_dark_mode else constants.COLOR_BLACK,
+        'help_color': constants.COLOR_GREY_5 if use_dark_mode else constants.COLOR_GREY_100,
+        'full_width': False,
+        'validator': {
+            'type': 'local',
+            'test': 'lambda x: True',
+            'message': ''
+        },
+        'external_validator': {
+            'cmd': '',
+        }
     }
-}
 
 
 def convert(parser, **kwargs):
@@ -269,7 +268,7 @@ def reapply_mutex_groups(mutex_groups, action_groups):
 
 
 def categorize2(groups, widget_dict, options):
-    use_dark_mode = wx.SystemSettings.GetAppearance().IsUsingDarkBackground()
+    use_dark_mode = darkdetect.isDark()
 
     constants.COLOR_WHITE if use_dark_mode else constants.COLOR_BLACK
 
@@ -415,7 +414,7 @@ def build_radio_group(mutex_group, widget_group, options):
     'cli_type': 'optional',
     'group_name': 'Choose Option',
     'required': mutex_group.required,
-    'options': merge(item_default, getattr(mutex_group, 'gooey_options', {})),
+    'options': merge(item_default(), getattr(mutex_group, 'gooey_options', {})),
     'data': {
       'commands': [action.option_strings for action in mutex_group._group_actions],
       'widgets': list(categorize(mutex_group._group_actions, widget_group, options))
